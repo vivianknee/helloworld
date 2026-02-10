@@ -1,27 +1,34 @@
-import { supabase } from "./utils/supabase";
+"use client";
 
-export default async function Home() {
-  const { data: majors, error } = await supabase
-    .from("university_majors")
-    .select("*");
+import { createClient } from "@/app/utils/supabase/client";
+
+export default function Home() {
+  const handleSignIn = () => {
+    const supabase = createClient();
+    supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-500 to-purple-600 p-8">
-      <h1 className="text-5xl font-bold text-white mb-8">University Majors</h1>
-      {error ? (
-        <p className="text-red-200">Failed to load majors.</p>
-      ) : (
-        <ul className="space-y-2 max-w-md">
-          {majors?.map((major) => (
-            <li
-              key={major.id}
-              className="bg-white/10 text-white rounded-lg px-4 py-3"
-            >
-              {major.name}
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="min-h-screen bg-gradient-to-b from-blue-500 to-purple-600 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-5xl font-bold text-white mb-8">
+          University Majors
+        </h1>
+        <p className="text-white/80 mb-8">
+          Sign in to view university majors
+        </p>
+        <button
+          onClick={handleSignIn}
+          className="bg-white text-purple-600 font-semibold px-6 py-3 rounded-lg hover:bg-white/90 transition-colors cursor-pointer"
+        >
+          Sign in with Google
+        </button>
+      </div>
     </div>
   );
 }
