@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/app/utils/supabase/server";
+import { createClient } from "../../utils/supabase/server";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -13,6 +13,5 @@ export async function GET(request: Request) {
     }
   }
 
-  // If there's no code or exchange failed, redirect to home
   return NextResponse.redirect(`${origin}/`);
 }

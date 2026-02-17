@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -29,12 +29,10 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh the auth session
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protect the /protected route
   if (!user && request.nextUrl.pathname.startsWith("/protected")) {
     const url = request.nextUrl.clone();
     url.pathname = "/";

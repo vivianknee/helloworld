@@ -1,6 +1,6 @@
 "use client";
 
-import { createClient } from "@/app/utils/supabase/client";
+import { createClient } from "./utils/supabase/client";
 
 export default function Home() {
   const handleSignIn = () => {
@@ -17,10 +17,10 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-b from-blue-500 to-purple-600 flex items-center justify-center">
       <div className="text-center">
         <h1 className="text-5xl font-bold text-white mb-8">
-          University Majors
+          Captions
         </h1>
         <p className="text-white/80 mb-8">
-          Sign in to view university majors
+          Sign in to view captions
         </p>
         <button
           onClick={handleSignIn}
