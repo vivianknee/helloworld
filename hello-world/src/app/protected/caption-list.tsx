@@ -7,7 +7,7 @@ type Caption = {
   id: number;
   content: string;
   like_count: number;
-  images: { url: string } | null;
+  images: { url: string }[] | null;
 };
 
 export default function CaptionList({
@@ -48,7 +48,7 @@ export default function CaptionList({
     }
   };
 
-  const captionsWithImages = captions.filter((c) => c.images?.url);
+  const captionsWithImages = captions.filter((c) => c.images?.[0]?.url);
 
   return (
     <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -58,7 +58,7 @@ export default function CaptionList({
           className="bg-white/10 text-white rounded-xl overflow-hidden backdrop-blur-sm"
         >
           <img
-            src={caption.images!.url}
+            src={caption.images![0].url}
             alt={caption.content}
             className="w-full aspect-square object-contain bg-black/20"
           />
