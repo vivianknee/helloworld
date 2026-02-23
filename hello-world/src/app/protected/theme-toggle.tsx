@@ -1,20 +1,13 @@
 "use client";
 
-import { createClient } from "../utils/supabase/client";
-import { useRouter } from "next/navigation";
+import { useTheme } from "../theme-provider";
 
-export default function SignOutButton() {
-  const router = useRouter();
-
-  const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/");
-  };
+export default function ThemeToggle() {
+  const { theme, toggle } = useTheme();
 
   return (
     <button
-      onClick={handleSignOut}
+      onClick={toggle}
       className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
       style={{
         background: "var(--btn-bg)",
@@ -23,7 +16,7 @@ export default function SignOutButton() {
       onMouseEnter={(e) => (e.currentTarget.style.background = "var(--btn-bg-hover)")}
       onMouseLeave={(e) => (e.currentTarget.style.background = "var(--btn-bg)")}
     >
-      Sign Out
+      {theme === "dark" ? "Light Mode" : "Dark Mode"}
     </button>
   );
 }
