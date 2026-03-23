@@ -45,7 +45,8 @@ export default function CaptionList({
         caption_id: captionId,
         profile_id: userId,
         vote_value: voteValue,
-        created_datetime_utc: new Date().toISOString(),
+        created_by_user_id: userId,
+        modified_by_user_id: userId,
       },
       { onConflict: "caption_id,profile_id" }
     );
