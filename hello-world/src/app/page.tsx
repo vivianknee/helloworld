@@ -41,8 +41,11 @@ export default function Home() {
         >
           Crackd Captions
         </h1>
-        <p className="mb-8" style={{ color: "var(--muted)" }}>
-          Sign in to upload images and generate captions
+        <p className="text-lg mb-2" style={{ color: "var(--foreground)", opacity: 0.8 }}>
+          Upload an image, get AI-generated captions, and vote on the funniest ones.
+        </p>
+        <p className="mb-8 text-sm" style={{ color: "var(--muted)" }}>
+          Sign in to get started
         </p>
         <button
           onClick={handleSignIn}

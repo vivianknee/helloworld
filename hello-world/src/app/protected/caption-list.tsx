@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { createClient } from "../utils/supabase/client";
 
 type Caption = {
@@ -35,6 +35,27 @@ export default function CaptionList({
   const [message, setMessage] = useState<{ captionId: number; text: string; type: "success" | "error" } | null>(null);
   const [activeImage, setActiveImage] = useState<string | null>(null);
   const [captionIndex, setCaptionIndex] = useState(0);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+
+  const handleCopy = useCallback(async (captionId: number, text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(captionId);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      setCopiedId(captionId);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  }, []);
 
   const handleVote = async (captionId: number, voteValue: number) => {
     const previousVote = voted[captionId] ?? null;
@@ -158,19 +179,38 @@ export default function CaptionList({
                 {captionIndex + 1} / {activeCaptions.length}
               </p>
 
-              <p
-                className="text-sm leading-snug mb-3"
-                style={{ color: "var(--foreground)" }}
-              >
-                {currentCaption.content}
-              </p>
+              <div className="flex items-start gap-2 mb-3">
+                <p
+                  className="text-sm leading-snug flex-1"
+                  style={{ color: "var(--foreground)" }}
+                >
+                  {currentCaption.content}
+                </p>
+                <button
+                  onClick={() => handleCopy(currentCaption.id, currentCaption.content)}
+                  className="shrink-0 px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer"
+                  style={
+                    copiedId === currentCaption.id
+                      ? { background: "var(--success-text)", color: "#fff" }
+                      : { background: "var(--btn-bg)", color: "var(--btn-text)" }
+                  }
+                  onMouseEnter={(e) => {
+                    if (copiedId !== currentCaption.id)
+                      e.currentTarget.style.background = "var(--btn-bg-hover)";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (copiedId !== currentCaption.id)
+                      e.currentTarget.style.background = "var(--btn-bg)";
+                  }}
+                >
+                  {copiedId === currentCaption.id ? "Copied!" : "Copy"}
+                </button>
+              </div>
 
-              {message?.captionId === currentCaption.id && (
+              {message?.captionId === currentCaption.id && message.type === "error" && (
                 <p
                   className="text-xs mb-2"
-                  style={{
-                    color: message.type === "success" ? "var(--success-text)" : "var(--error-text)",
-                  }}
+                  style={{ color: "var(--error-text)" }}
                 >
                   {message.text}
                 </p>
@@ -178,9 +218,14 @@ export default function CaptionList({
 
               {/* Vote row */}
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs" style={{ color: "var(--muted)" }}>
-                  {likeCounts[currentCaption.id]} likes
-                </span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-xs font-medium" style={{ color: "var(--accent)" }}>
+                    Vote for the best caption!
+                  </span>
+                  <span className="text-xs" style={{ color: "var(--muted)" }}>
+                    {likeCounts[currentCaption.id]} {likeCounts[currentCaption.id] === 1 ? "like" : "likes"}
+                  </span>
+                </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleVote(currentCaption.id, 1)}
@@ -203,7 +248,7 @@ export default function CaptionList({
                       }
                     }}
                   >
-                    Up
+                    {voted[currentCaption.id] === 1 ? "Upvoted" : "Up"}
                   </button>
                   <button
                     onClick={() => handleVote(currentCaption.id, -1)}
@@ -226,7 +271,7 @@ export default function CaptionList({
                       }
                     }}
                   >
-                    Down
+                    {voted[currentCaption.id] === -1 ? "Downvoted" : "Down"}
                   </button>
                 </div>
               </div>
